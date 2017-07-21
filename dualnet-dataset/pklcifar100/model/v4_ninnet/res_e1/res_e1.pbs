@@ -1,0 +1,12 @@
+#PBS -N pklcifar100_v4_ninnet
+#PBS -o /home/housh/jobs_pbs/err_and_out/pklcifar100_v4_ninnet.out
+#PBS -e /home/housh/jobs_pbs/err_and_out/pklcifar100_v4_ninnet.err
+#PBS -l nodes=1:gpus=1:S
+#PBS -r y
+cd $PBS_O_WORKDIR
+echo Time is `date`
+echo Directory is $PWD
+echo This job runs on following nodes:
+cat $PBS_NODEFILE
+cd /home/housh/caffe-dualnet/
+GLOG_logstdtoerr=1 ./build/tools/caffe train -solver data/pklcifar100/model/v4_ninnet/res_e1/res_e1_solver.prototxt -weights data/pklcifar100/model/v4_ninnet/pklcifar100_nin_train_iter_120000.caffemodel_coarse 2>&1 | tee -a data/pklcifar100/model/v4_ninnet/res_e1/pklcifar100_nin_res_e1_log.txt

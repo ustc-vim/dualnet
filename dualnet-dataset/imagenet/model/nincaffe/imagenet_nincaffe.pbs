@@ -1,0 +1,12 @@
+#PBS -N imagenet_nincaffe
+#PBS -o /home/housh/jobs_pbs/err_and_out/imagenet_nincaffe.out
+#PBS -e /home/housh/jobs_pbs/err_and_out/imagenet_nincaffe.err
+#PBS -l nodes=1:gpus=1:S
+#PBS -r y
+cd $PBS_O_WORKDIR
+echo Time is `date`
+echo Directory is $PWD
+echo This job runs on following nodes:
+cat $PBS_NODEFILE
+cd /home/housh/caffe-fys-cvpr17/
+sh data/imagenet/model/nincaffe/imagenet_nincaffe.sh

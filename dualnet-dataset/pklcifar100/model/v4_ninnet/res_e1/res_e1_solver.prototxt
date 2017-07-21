@@ -1,0 +1,14 @@
+net: "data/pklcifar100/model/v4_ninnet/res_e1/res_e1_train_val.prototxt"
+test_iter: 100
+test_interval: 5000
+base_lr: 0.1
+momentum: 0.9
+weight_decay: 0.0001
+lr_policy: "step"
+gamma: 0.1
+stepsize: 100000
+display: 20
+max_iter: 120000
+snapshot: 10000
+snapshot_prefix: "data/pklcifar100/model/v4_ninnet/snapshot/pklcifar100_nin_res_e1"
+solver_mode: GPU

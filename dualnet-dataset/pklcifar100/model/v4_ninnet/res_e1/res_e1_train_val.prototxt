@@ -1,0 +1,783 @@
+name: "CIFAR10_full"
+layer {
+  name: "cifar"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    mirror: true
+    mean_file: "data/pklcifar100/data/pklcifar100_mean.binaryproto"
+  }
+  data_param {
+    source: "data/pklcifar100/data/pklcifar100_train_leveldb"
+    batch_size: 128
+    backend: LEVELDB
+  }
+}
+layer {
+  name: "cifar"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    mean_file: "data/pklcifar100/data/pklcifar100_mean.binaryproto"
+  }
+  data_param {
+    source: "data/pklcifar100/data/pklcifar100_test_leveldb"
+    batch_size: 100
+    backend: LEVELDB
+  }
+}
+
+#coarse network
+layer {
+  name: "conv1_coarse"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1_coarse"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu1_coarse"
+  type: "ReLU"
+  bottom: "conv1_coarse"
+  top: "conv1_coarse"
+}
+layer {
+  name: "cccp1_coarse"
+  type: "Convolution"
+  bottom: "conv1_coarse"
+  top: "cccp1_coarse"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 160
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp1_coarse"
+  type: "ReLU"
+  bottom: "cccp1_coarse"
+  top: "cccp1_coarse"
+}
+layer {
+  name: "cccp2_coarse"
+  type: "Convolution"
+  bottom: "cccp1_coarse"
+  top: "cccp2_coarse"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp2_coarse"
+  type: "ReLU"
+  bottom: "cccp2_coarse"
+  top: "cccp2_coarse"
+}
+layer {
+  name: "pool1_coarse"
+  type: "Pooling"
+  bottom: "cccp2_coarse"
+  top: "pool1_coarse"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "drop3_coarse"
+  type: "Dropout"
+  bottom: "pool1_coarse"
+  top: "pool1_coarse"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "conv2_coarse"
+  type: "Convolution"
+  bottom: "pool1_coarse"
+  top: "conv2_coarse"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu2_coarse"
+  type: "ReLU"
+  bottom: "conv2_coarse"
+  top: "conv2_coarse"
+}
+layer {
+  name: "cccp3_coarse"
+  type: "Convolution"
+  bottom: "conv2_coarse"
+  top: "cccp3_coarse"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp3_coarse"
+  type: "ReLU"
+  bottom: "cccp3_coarse"
+  top: "cccp3_coarse"
+}
+layer {
+  name: "cccp4_coarse"
+  type: "Convolution"
+  bottom: "cccp3_coarse"
+  top: "cccp4_coarse"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp4_coarse"
+  type: "ReLU"
+  bottom: "cccp4_coarse"
+  top: "cccp4_coarse"
+}
+layer {
+  name: "pool2_coarse"
+  type: "Pooling"
+  bottom: "cccp4_coarse"
+  top: "pool2_coarse"
+  pooling_param {
+    pool: AVE
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "drop6_coarse"
+  type: "Dropout"
+  bottom: "pool2_coarse"
+  top: "pool2_coarse"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "conv3_coarse"
+  type: "Convolution"
+  bottom: "pool2_coarse"
+  top: "conv3_coarse"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu3_coarse"
+  type: "ReLU"
+  bottom: "conv3_coarse"
+  top: "conv3_coarse"
+}
+layer {
+  name: "cccp5_coarse"
+  type: "Convolution"
+  bottom: "conv3_coarse"
+  top: "cccp5_coarse"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp5_coarse"
+  type: "ReLU"
+  bottom: "cccp5_coarse"
+  top: "cccp5_coarse"
+}
+
+#fine network
+layer {
+  name: "conv1_fine"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1_fine"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu1_fine"
+  type: "ReLU"
+  bottom: "conv1_fine"
+  top: "conv1_fine"
+}
+layer {
+  name: "cccp1_fine"
+  type: "Convolution"
+  bottom: "conv1_fine"
+  top: "cccp1_fine"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 160
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp1_fine"
+  type: "ReLU"
+  bottom: "cccp1_fine"
+  top: "cccp1_fine"
+}
+layer {
+  name: "cccp2_fine"
+  type: "Convolution"
+  bottom: "cccp1_fine"
+  top: "cccp2_fine"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp2_fine"
+  type: "ReLU"
+  bottom: "cccp2_fine"
+  top: "cccp2_fine"
+}
+layer {
+  name: "pool1_fine"
+  type: "Pooling"
+  bottom: "cccp2_fine"
+  top: "pool1_fine"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "drop3_fine"
+  type: "Dropout"
+  bottom: "pool1_fine"
+  top: "pool1_fine"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "conv2_fine"
+  type: "Convolution"
+  bottom: "pool1_fine"
+  top: "conv2_fine"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    pad: 2
+    kernel_size: 5
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu2_fine"
+  type: "ReLU"
+  bottom: "conv2_fine"
+  top: "conv2_fine"
+}
+layer {
+  name: "cccp3_fine"
+  type: "Convolution"
+  bottom: "conv2_fine"
+  top: "cccp3_fine"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp3_fine"
+  type: "ReLU"
+  bottom: "cccp3_fine"
+  top: "cccp3_fine"
+}
+layer {
+  name: "cccp4_fine"
+  type: "Convolution"
+  bottom: "cccp3_fine"
+  top: "cccp4_fine"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp4_fine"
+  type: "ReLU"
+  bottom: "cccp4_fine"
+  top: "cccp4_fine"
+}
+layer {
+  name: "pool2_fine"
+  type: "Pooling"
+  bottom: "cccp4_fine"
+  top: "pool2_fine"
+  pooling_param {
+    pool: AVE
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "drop6_fine"
+  type: "Dropout"
+  bottom: "pool2_fine"
+  top: "pool2_fine"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "conv3_fine"
+  type: "Convolution"
+  bottom: "pool2_fine"
+  top: "conv3_fine"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu3_fine"
+  type: "ReLU"
+  bottom: "conv3_fine"
+  top: "conv3_fine"
+}
+layer {
+  name: "cccp5_fine"
+  type: "Convolution"
+  bottom: "conv3_fine"
+  top: "cccp5_fine"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 192
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp5_fine"
+  type: "ReLU"
+  bottom: "cccp5_fine"
+  top: "cccp5_fine"
+}
+
+#fuse
+layer {
+  name: "fuse"
+  type: "Eltwise"
+  bottom: "cccp5_fine"
+  bottom: "cccp5_coarse"
+  top: "cccp5_fused"
+  eltwise_param {
+      operation: SUM
+      coeff: 0.5
+      coeff: 0.5
+  }
+}
+
+layer {
+  name: "cccp6_coarse"
+  type: "Convolution"
+  bottom: "cccp5_fused"
+  top: "cccp6_coarse"
+  param {
+    lr_mult: 0.01
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 0.01
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 100
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp6_coarse"
+  type: "ReLU"
+  bottom: "cccp6_coarse"
+  top: "cccp6_coarse"
+}
+layer {
+  name: "pool3_coarse"
+  type: "Pooling"
+  bottom: "cccp6_coarse"
+  top: "pool3_coarse"
+  pooling_param {
+    pool: AVE
+    kernel_size: 8
+    stride: 1
+  }
+}
+layer {
+  name: "accuracy_coarse"
+  type: "Accuracy"
+  bottom: "pool3_coarse"
+  bottom: "label"
+  top: "accuracy_coarse"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss_coarse"
+  type: "SoftmaxWithLoss"
+  bottom: "pool3_coarse"
+  bottom: "label"
+  top: "loss_coarse"
+}
+
+# To keep fine features discriminative
+layer {
+  name: "cccp6_fine"
+  type: "Convolution"
+  bottom: "cccp5_fine"
+  top: "cccp6_fine"
+  param {
+    lr_mult: 0.1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 100
+    kernel_size: 1
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.05
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cccp6_fine"
+  type: "ReLU"
+  bottom: "cccp6_fine"
+  top: "cccp6_fine"
+}
+layer {
+  name: "pool3_fine"
+  type: "Pooling"
+  bottom: "cccp6_fine"
+  top: "pool3_fine"
+  pooling_param {
+    pool: AVE
+    kernel_size: 8
+    stride: 1
+  }
+}
+layer {
+  name: "accuracy_fine"
+  type: "Accuracy"
+  bottom: "pool3_fine"
+  bottom: "label"
+  top: "accuracy_fine"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss_fine"
+  type: "SoftmaxWithLoss"
+  bottom: "pool3_fine"
+  bottom: "label"
+  top: "loss_fine"
+  loss_weight: 0.3
+}
